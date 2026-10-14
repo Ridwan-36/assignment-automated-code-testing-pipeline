@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -25,6 +24,14 @@ pipeline {
                 bat 'mvn package'
             }
         }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying packaged application to local deploy folder'
+                bat 'if not exist deploy mkdir deploy'
+                bat 'copy /Y target\\automated-code-testing-pipeline-1.0-SNAPSHOT.jar deploy\\app.jar'
+            }
+        }
     }
 
     post {
@@ -32,10 +39,10 @@ pipeline {
             junit 'target/surefire-reports/*.xml'
         }
         success {
-            echo 'Build and tests completed successfully!'
+            echo 'Build, tests, packaging and deployment completed successfully!'
         }
         failure {
-            echo 'Build or tests failed. Check the console output.'
+            echo 'Pipeline failed. Check the console output.'
         }
     }
 }
